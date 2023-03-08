@@ -49,7 +49,7 @@ export function useCreateProjectLogic({ projectSponsorshipMinFee }: Params) {
       ? "Invalid number"
       : lovelaceAmount && lovelaceAmount < projectSponsorshipMinFee
       ? "Fails to reach the minimum sponsorship fee"
-      : maxLovelaceAmount && maxLovelaceAmount < lovelaceAmount
+      : maxLovelaceAmount != undefined && maxLovelaceAmount < lovelaceAmount
       ? "There is not sufficient ADA in your wallet"
       : undefined;
 
