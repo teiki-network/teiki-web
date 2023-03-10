@@ -1,19 +1,17 @@
-import * as React from "react";
-
 import { getMaxLovelaceAmount } from "../utils/max";
 
-import { parseLovelaceAmount } from "@/modules/bigint-utils";
 import {
   isAbortError,
   useAsyncComputation,
 } from "@/modules/common-hooks/hooks/useAsyncComputation";
 import { useAppContextValue$Consumer } from "@/modules/teiki-contexts/contexts/AppContext";
 
+// TODO: @sk-kitsune: After moving two fields out of this hook, now this
+// hook only calculates the max lovelace amount. We will use the proper
+// algorithm to calculate the max lovelace amount.
 export function useSupportProjectLogic() {
   const { walletStatus } = useAppContextValue$Consumer();
-  const [lovelaceAmount$Input, setLovelaceAmount$Input] = React.useState("");
 
-  const lovelaceAmount = parseLovelaceAmount(lovelaceAmount$Input);
   const walletLovelaceAmount =
     walletStatus.status === "connected"
       ? walletStatus.info.lovelaceAmount
@@ -34,30 +32,8 @@ export function useSupportProjectLogic() {
     }
   );
 
-  const lovelaceAmount$SyntaxError =
-    lovelaceAmount == null
-      ? "Invalid number"
-      : lovelaceAmount <
-        2000000 /**TODO: @sk-tenba: import this number from somewhere */
-      ? "You must back at least 2 ADA"
-      : maxLovelaceAmount && maxLovelaceAmount < lovelaceAmount
-      ? "There is not sufficient ADA in your wallet"
-      : undefined;
-
-  const setLovelaceAmount = (lovelaceAmount: string) => {
-    setLovelaceAmount$Input(lovelaceAmount.replace(/[^0-9.]+/g, ""));
-  };
-
   return {
-    input: {
-      lovelaceAmount: lovelaceAmount$Input,
-      setLovelaceAmount,
-    },
-    syntaxError: {
-      lovelaceAmount: lovelaceAmount$SyntaxError,
-    },
     output: {
-      lovelaceAmount: !lovelaceAmount$SyntaxError ? lovelaceAmount : undefined,
       walletLovelaceAmount,
       maxLovelaceAmount,
     },

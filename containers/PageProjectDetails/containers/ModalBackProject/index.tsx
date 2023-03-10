@@ -4,6 +4,7 @@ import * as React from "react";
 import ErrorBox from "../../../PageUpdateProjectV2/components/ErrorBox";
 
 import { TxBreakdown, useEstimatedFees } from "./hooks/useEstimatedFees";
+import { useField$LovelaceAmount, useField$Message } from "./hooks/useField";
 import { useSupportProjectLogic } from "./hooks/useSupportProjectLogic";
 import IconRewardStar from "./icons/IconRewardStar";
 import styles from "./index.module.scss";
@@ -30,7 +31,6 @@ import Modal from "@/modules/teiki-ui/components/Modal";
 import TextArea from "@/modules/teiki-ui/components/TextArea";
 import Title from "@/modules/teiki-ui/components/Title";
 import Typography from "@/modules/teiki-ui/components/Typography";
-import { useField$Message } from "./hooks/useField";
 
 const ASSUMED_ROA = BigInt(35000);
 const MULTIPLIER = BigInt(1000000);
@@ -74,13 +74,17 @@ export default function ModalBackProject({
     [TxBreakdown | undefined, unknown]
   >([undefined, undefined]);
   const fieldMessage = useField$Message();
-  const { input, syntaxError, output } = useSupportProjectLogic();
+  const { output } = useSupportProjectLogic();
+  const fieldLovelaceAmount = useField$LovelaceAmount({
+    maxLovelaceAmount: output.maxLovelaceAmount,
+  });
+
   const txParamsResult = useTxParams$BackerBackProject({ projectId });
 
   const [txBreakdown$New, txBreakdown$New$Error] = useEstimatedFees({
     txParamsResult,
     projectId,
-    lovelaceAmount: output.lovelaceAmount,
+    lovelaceAmount: fieldLovelaceAmount.parsed,
     message: fieldMessage.parsed,
     disabled: busy,
   });
@@ -89,7 +93,7 @@ export default function ModalBackProject({
     !txBreakdown$New$Error &&
     !txBreakdown$New &&
     !busy &&
-    output.lovelaceAmount !== undefined;
+    fieldLovelaceAmount.parsed !== undefined;
 
   React.useEffect(() => {
     if (busy) return;
@@ -110,10 +114,10 @@ export default function ModalBackProject({
   };
 
   const handleSubmit = async () => {
-    if (output.lovelaceAmount == null) return;
+    if (fieldLovelaceAmount.parsed == null) return;
     setBusy(true);
     try {
-      const { lovelaceAmount } = output;
+      const lovelaceAmount = fieldLovelaceAmount.parsed;
       const message = fieldMessage.parsed;
       assert(walletStatus.status === "connected", "wallet not connected");
       assert(lovelaceAmount != null && message != null, "invalid inputs");
@@ -205,10 +209,10 @@ export default function ModalBackProject({
               <fieldset className={styles.fieldset}>
                 <Title className={styles.fieldLabel} content="Stake Amount" />
                 <InputLovelaceAmount
-                  value={input.lovelaceAmount}
-                  onChange={input.setLovelaceAmount}
-                  inlineError={syntaxError.lovelaceAmount}
-                  lovelaceAmount={output.lovelaceAmount}
+                  value={fieldLovelaceAmount.text}
+                  onChange={fieldLovelaceAmount.setText}
+                  inlineError={fieldLovelaceAmount.error}
+                  lovelaceAmount={fieldLovelaceAmount.parsed}
                   maxLovelaceAmount={output.maxLovelaceAmount}
                   disabled={busy}
                 />
@@ -231,8 +235,9 @@ export default function ModalBackProject({
                       as="span"
                       approx={true}
                       lovelaceAmount={
-                        output.lovelaceAmount
-                          ? (((BigInt(output.lovelaceAmount) * ASSUMED_ROA) /
+                        fieldLovelaceAmount.parsed
+                          ? (((BigInt(fieldLovelaceAmount.parsed) *
+                              ASSUMED_ROA) /
                               MULTIPLIER) *
                               EPOCH_LENGTH_IN_DAYS) /
                             YEAR_LENGTH_IN_DAYS
