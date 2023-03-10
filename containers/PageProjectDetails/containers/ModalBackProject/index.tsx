@@ -30,6 +30,7 @@ import Modal from "@/modules/teiki-ui/components/Modal";
 import TextArea from "@/modules/teiki-ui/components/TextArea";
 import Title from "@/modules/teiki-ui/components/Title";
 import Typography from "@/modules/teiki-ui/components/Typography";
+import { useField$Message } from "./hooks/useField";
 
 const ASSUMED_ROA = BigInt(35000);
 const MULTIPLIER = BigInt(1000000);
@@ -72,6 +73,7 @@ export default function ModalBackProject({
   const [[txBreakdown, txBreakdown$Error], setTxBreakdown] = React.useState<
     [TxBreakdown | undefined, unknown]
   >([undefined, undefined]);
+  const fieldMessage = useField$Message();
   const { input, syntaxError, output } = useSupportProjectLogic();
   const txParamsResult = useTxParams$BackerBackProject({ projectId });
 
@@ -79,7 +81,7 @@ export default function ModalBackProject({
     txParamsResult,
     projectId,
     lovelaceAmount: output.lovelaceAmount,
-    message: output.message,
+    message: fieldMessage.parsed,
     disabled: busy,
   });
 
@@ -111,7 +113,8 @@ export default function ModalBackProject({
     if (output.lovelaceAmount == null) return;
     setBusy(true);
     try {
-      const { lovelaceAmount, message } = output;
+      const { lovelaceAmount } = output;
+      const message = fieldMessage.parsed;
       assert(walletStatus.status === "connected", "wallet not connected");
       assert(lovelaceAmount != null && message != null, "invalid inputs");
       assert(txParamsResult && !txParamsResult.error, "tx params invalid");
@@ -258,23 +261,22 @@ export default function ModalBackProject({
                   <span style={{ fontWeight: "400", fontSize: "12px" }}>
                     {" (Optional, 1500 characters max)"}
                   </span>
-                  {!!syntaxError.message && (
+                  {!!fieldMessage.error && (
                     <span style={{ color: "rgb(220, 32, 32)" }}>
-                      {" "}
-                      {syntaxError.message}
+                      {fieldMessage.error}
                     </span>
                   )}
                 </Title>
                 <TextArea
                   className={styles.inputMessage}
-                  value={input.message}
-                  onChange={input.setMessage}
+                  value={fieldMessage.text}
+                  onChange={fieldMessage.setText}
                   rows={5}
                   disabled={busy}
                 />
                 <span
                   className={styles.characterCount}
-                >{`${input.message.length}/1500`}</span>
+                >{`${fieldMessage.text.length}/1500`}</span>
               </fieldset>
             </form>
           </Flex.Col>

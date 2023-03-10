@@ -12,10 +12,8 @@ import { useAppContextValue$Consumer } from "@/modules/teiki-contexts/contexts/A
 export function useSupportProjectLogic() {
   const { walletStatus } = useAppContextValue$Consumer();
   const [lovelaceAmount$Input, setLovelaceAmount$Input] = React.useState("");
-  const [message$Input, setMessage$Input] = React.useState("");
 
   const lovelaceAmount = parseLovelaceAmount(lovelaceAmount$Input);
-  const message = message$Input;
   const walletLovelaceAmount =
     walletStatus.status === "connected"
       ? walletStatus.info.lovelaceAmount
@@ -50,23 +48,16 @@ export function useSupportProjectLogic() {
     setLovelaceAmount$Input(lovelaceAmount.replace(/[^0-9.]+/g, ""));
   };
 
-  const message$Error =
-    message.length > 1500 ? "Exceed character limit" : undefined;
-
   return {
     input: {
       lovelaceAmount: lovelaceAmount$Input,
       setLovelaceAmount,
-      message: message$Input,
-      setMessage: setMessage$Input,
     },
     syntaxError: {
       lovelaceAmount: lovelaceAmount$SyntaxError,
-      message: message$Error,
     },
     output: {
       lovelaceAmount: !lovelaceAmount$SyntaxError ? lovelaceAmount : undefined,
-      message: !message$Error ? message : undefined,
       walletLovelaceAmount,
       maxLovelaceAmount,
     },
