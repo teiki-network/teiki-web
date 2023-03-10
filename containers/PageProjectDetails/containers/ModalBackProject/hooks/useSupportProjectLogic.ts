@@ -43,7 +43,7 @@ export function useSupportProjectLogic() {
         2000000 /**TODO: @sk-tenba: import this number from somewhere */
       ? "You must back at least 2 ADA"
       : maxLovelaceAmount != undefined && maxLovelaceAmount < lovelaceAmount
-      ? "There is not sufficient ADA in your wallet"
+      ? "Insufficient ADA balance"
       : undefined;
 
   const setLovelaceAmount = (lovelaceAmount: string) => {
