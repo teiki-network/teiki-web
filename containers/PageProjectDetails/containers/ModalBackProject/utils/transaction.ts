@@ -26,7 +26,8 @@ export type BuildTxResult = {
 
 export async function buildTx(params: BuildTxParams): Promise<BuildTxResult> {
   const tx = await buildTxRaw(params);
-  const txComplete = await tx.complete();
+  // `nativeUplc` is specified as a temporary workaround for an Aiken bug
+  const txComplete = await tx.complete({ nativeUplc: false });
 
   const txFee = BigInt(txComplete.txComplete.body().fee().to_str());
 
