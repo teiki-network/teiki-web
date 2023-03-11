@@ -5,7 +5,7 @@ import ErrorBox from "../../../PageUpdateProjectV2/components/ErrorBox";
 
 import { TxBreakdown, useEstimatedFees } from "./hooks/useEstimatedFees";
 import { useField$LovelaceAmount, useField$Message } from "./hooks/useField";
-import { useSupportProjectLogic } from "./hooks/useSupportProjectLogic";
+import { useMaxLovelaceAmount } from "./hooks/useMaxLovelaceAmount";
 import IconRewardStar from "./icons/IconRewardStar";
 import styles from "./index.module.scss";
 import { buildTx, BuildTxParams } from "./utils/transaction";
@@ -74,12 +74,14 @@ export default function ModalBackProject({
     [TxBreakdown | undefined, unknown]
   >([undefined, undefined]);
   const fieldMessage = useField$Message();
-  const { output } = useSupportProjectLogic();
-  const fieldLovelaceAmount = useField$LovelaceAmount({
-    maxLovelaceAmount: output.maxLovelaceAmount,
-  });
 
   const txParamsResult = useTxParams$BackerBackProject({ projectId });
+
+  const [maxLovelaceAmount, _maxLovelaceAmount$Error] = useMaxLovelaceAmount();
+
+  const fieldLovelaceAmount = useField$LovelaceAmount({
+    maxLovelaceAmount,
+  });
 
   const [txBreakdown$New, txBreakdown$New$Error] = useEstimatedFees({
     txParamsResult,
@@ -213,7 +215,7 @@ export default function ModalBackProject({
                   onChange={fieldLovelaceAmount.setText}
                   inlineError={fieldLovelaceAmount.error}
                   lovelaceAmount={fieldLovelaceAmount.parsed}
-                  maxLovelaceAmount={output.maxLovelaceAmount}
+                  maxLovelaceAmount={maxLovelaceAmount}
                   disabled={busy}
                 />
               </fieldset>
