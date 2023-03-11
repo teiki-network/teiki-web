@@ -32,6 +32,7 @@ type Response = {
  * 3 = announcement
  * 4 = protocol landmark reached
  * 5 = project update
+ * 6 = project creation
  */
 
 export async function getAllActivities(
@@ -156,9 +157,10 @@ export async function getAllActivities(
         WINDOW w AS (PARTITION BY ul.project_id ORDER BY ul.id)
       ) ru
       WHERE
-        (ru.contents IS DISTINCT FROM ru.prev_contents AND ru.prev_contents IS NOT NULL)
+        (ru.contents IS DISTINCT FROM ru.prev_contents
           OR sponsorship_until IS DISTINCT FROM prev_sponsorship_until
           OR sponsorship_amount IS DISTINCT FROM prev_sponsorship_amount
+        ) AND ru.prev_contents IS NOT NULL
     ),
 
     -- Query Project protocol-milestone reached
@@ -210,6 +212,25 @@ export async function getAllActivities(
         }
         AND (ba.action = 'back' OR ba.action = 'unback')
       ORDER BY ba.time DESC NULLS LAST
+    ),
+
+    res_creation AS (
+      SELECT
+        DISTINCT ON (pd.project_id) pd.project_id,
+        p.owner_address AS created_by,
+        o.tx_id AS created_tx,
+        o.id AS output_id,
+        b.time,
+        6 AS action,
+        pd.sponsorship_amount
+      FROM
+        chain.project_detail pd
+        INNER JOIN chain.project p ON p.project_id = pd.project_id
+        INNER JOIN ipfs.project_info pi ON pi.cid = pd.information_cid
+        INNER JOIN chain.output o ON o.id = pd.id
+        INNER JOIN chain.block b ON o.created_slot = b.slot
+      WHERE EXISTS (SELECT FROM all_referenced_projects a WHERE a.project_id = pd.project_id)
+      ORDER BY pd.project_id, pd.id
     )
 
     SELECT * FROM (
@@ -312,6 +333,31 @@ export async function getAllActivities(
         ru.sponsorship,
         ru.sponsorship_amount
       FROM res_update ru
+      UNION ALL
+      SELECT
+        rc.project_id AS project_id,
+        rc.time AS time,
+        null AS message,
+        rc.created_by AS created_by,
+        rc.created_tx AS created_tx,
+        rc.output_id AS output_id,
+        rc.action AS action,
+        null AS amount,
+        null AS announcement_title,
+        null::smallint AS milestone,
+        null::boolean AS description,
+        null::boolean AS benefits,
+        null::boolean AS title,
+        null::boolean AS slogan,
+        null::boolean AS custom_url,
+        null::boolean AS tags,
+        null::boolean AS summary,
+        null::boolean AS cover_images,
+        null::boolean AS logo_image,
+        null::boolean AS community,
+        null::boolean AS sponsorship,
+        rc.sponsorship_amount AS sponsorship_amount
+      FROM res_creation rc
     ) res
     WHERE ${
       cursorTime && cursorAction && cursorOutputId
@@ -410,6 +456,18 @@ export async function getAllActivities(
             type: "project_update",
             projectTitle: "",
             scope,
+            message: null,
+          },
+        };
+        break;
+      }
+      case 6: {
+        res = {
+          ...commonFields,
+          action: {
+            type: "project_creation",
+            sponsorshipAmount: result["sponsorshipAmount"],
+            projectTitle: "",
             message: null,
           },
         };

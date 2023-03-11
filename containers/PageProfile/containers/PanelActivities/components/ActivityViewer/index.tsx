@@ -4,6 +4,7 @@ import * as React from "react";
 
 import ActionAnnouncement from "./components/ActionAnnouncement";
 import ActionBack from "./components/ActionBack";
+import ActionProjectCreation from "./components/ActionProjectCreation";
 import ActionProjectUpdate from "./components/ActionProjectUpdate";
 import ActionProtocolMilestoneReached from "./components/ActionProtocolMilestoneReached";
 import ActionUnback from "./components/ActionUnback";
@@ -76,6 +77,8 @@ export default function ActivityViewer({
                     value={projectActivity.action}
                   />
                 );
+              case "project_creation":
+                return <ActionProjectCreation value={projectActivity.action} />;
               default:
                 return null;
             }
