@@ -264,6 +264,12 @@ export type ProjectActivityAction =
       projectTitle: string;
       milestonesSnapshot: number;
       message: string | null;
+    }
+  | {
+      type: "project_creation";
+      projectTitle: string;
+      sponsorshipAmount: LovelaceAmount | null;
+      message: string | null;
     };
 
 export type ProjectActivity = {
