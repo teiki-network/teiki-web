@@ -96,7 +96,15 @@
   background-color: #fff;
   border-radius: 65px;
   padding: 8px 12px;
-  top: 32px;
-  left: 56px;
+
+  &.normal {
+    left: 56px;
+    top: 32px;
+  }
+  &.narrow {
+    left: 32px;
+    top: 16px;
+  }
+
   z-index: 1;
 }

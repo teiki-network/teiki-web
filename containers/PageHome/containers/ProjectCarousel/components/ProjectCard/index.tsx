@@ -92,7 +92,10 @@ export default function ProjectCard({
         <>
           {!value.match ? null : (
             <Typography.Div
-              className={styles.match}
+              className={cx(
+                styles.match,
+                padding === "normal" ? styles.normal : styles.narrow
+              )}
               size="bodyExtraSmall"
               fontWeight="semibold"
               lineHeight="small"
