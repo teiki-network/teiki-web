@@ -6,6 +6,7 @@ import {
 } from "../../../../../config/server";
 
 import * as crypt from "@/modules/crypt";
+import { CipherText } from "@/modules/crypt";
 import { apiCatch, ClientError } from "@/modules/next-backend/api/errors";
 import { sendJson } from "@/modules/next-backend/api/helpers";
 
@@ -15,7 +16,7 @@ export const config = {
   },
 };
 
-type Envelope = crypt.CipherMeta & { ciphertext: crypt.Base64 };
+type Envelope = crypt.CipherMeta & { ciphertext: CipherText };
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,7 +1,8 @@
 import { JSONContent } from "@tiptap/core";
 import { TxHash } from "lucid-cardano";
 
-import { Base64, CipherMeta } from "../crypt";
+import { CipherMeta, CipherText } from "../crypt";
+import { WithBufsAs } from "../with-bufs-as";
 
 import { formatLovelaceAmount } from "@/modules/bigint-utils";
 
@@ -9,6 +10,7 @@ export type Address = string;
 export type TimestampInMilliseconds = number;
 export type LovelaceAmount = number | bigint;
 export type MicroTeikiAmount = number | bigint;
+type Cid = string;
 
 export type ProjectDescription = {
   body: JSONContent;
@@ -68,9 +70,8 @@ export type Project = {
   community: ProjectCommunity;
 };
 
-export type ProjectAnnouncement = {
+interface IProjectPost {
   title: string;
-  body: JSONContent;
   summary: string;
   createdAt?: TimestampInMilliseconds;
   createdBy?: Address;
@@ -94,12 +95,29 @@ export type ProjectAnnouncement = {
    * `censorship` indicates list of inappropriate fields.
    */
   censorship?: string[];
-};
+}
 
-export type ExclusivePost = Omit<ProjectAnnouncement, "body"> & {
-  body: CipherMeta & { data: Base64 };
-  totalActiveStakeToView: LovelaceAmount;
-};
+// Mostly used for rendering
+export interface PublicProjectPost extends IProjectPost {
+  body: JSONContent;
+  exclusive?: never;
+}
+
+// Decrypted body content, need to encrypt to transform to `PublicProjectPost`
+export interface ExclusiveProjectPost extends IProjectPost {
+  body: CipherMeta & { ciphertext: CipherText<JSONContent> };
+  exclusive: { tier: number };
+}
+
+export type AnyProjectPost = PublicProjectPost | ExclusiveProjectPost;
+
+// For IPFS Storage
+export type AnyProjectPostWithBufs =
+  | WithBufsAs<PublicProjectPost, Cid>
+  | WithBufsAs<ExclusiveProjectPost, CipherMeta & { cid: Cid }>;
+
+/** @deprecated Should not use this type in the future */
+export type ProjectAnnouncement = PublicProjectPost;
 
 /** @deprecated Please rename to `ProjectAnnouncement` */
 export type ProjectCommunityUpdate = ProjectAnnouncement;
