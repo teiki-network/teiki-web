@@ -1,7 +1,5 @@
 import React from "react";
 
-import { getMaxLovelaceAmount } from "../../../../PageProjectDetails/containers/ModalBackProject/utils/max";
-
 import { parseLovelaceAmount } from "@/modules/bigint-utils";
 import { LovelaceAmount } from "@/modules/business-types";
 import {
@@ -9,6 +7,8 @@ import {
   useAsyncComputation,
 } from "@/modules/common-hooks/hooks/useAsyncComputation";
 import { useAppContextValue$Consumer } from "@/modules/teiki-contexts/contexts/AppContext";
+
+const PADDING_LOVELACE_AMOUNT: LovelaceAmount = 5000000;
 
 type Params = {
   projectSponsorshipMinFee?: LovelaceAmount;
@@ -33,8 +33,7 @@ export function useCreateProjectLogic({ projectSponsorshipMinFee }: Params) {
         return undefined;
       }
       try {
-        const res = await getMaxLovelaceAmount({ walletLovelaceAmount });
-        return res;
+        return BigInt(walletLovelaceAmount) - BigInt(PADDING_LOVELACE_AMOUNT);
       } catch (e) {
         if (isAbortError(e)) throw e;
         return undefined;

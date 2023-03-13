@@ -4,7 +4,8 @@ import * as React from "react";
 import ErrorBox from "../../../PageUpdateProjectV2/components/ErrorBox";
 
 import { TxBreakdown, useEstimatedFees } from "./hooks/useEstimatedFees";
-import { useSupportProjectLogic } from "./hooks/useSupportProjectLogic";
+import { useField$LovelaceAmount, useField$Message } from "./hooks/useField";
+import { useMaxLovelaceAmount } from "./hooks/useMaxLovelaceAmount";
 import IconRewardStar from "./icons/IconRewardStar";
 import styles from "./index.module.scss";
 import { buildTx, BuildTxParams } from "./utils/transaction";
@@ -72,14 +73,21 @@ export default function ModalBackProject({
   const [[txBreakdown, txBreakdown$Error], setTxBreakdown] = React.useState<
     [TxBreakdown | undefined, unknown]
   >([undefined, undefined]);
-  const { input, syntaxError, output } = useSupportProjectLogic();
+  const fieldMessage = useField$Message();
+
   const txParamsResult = useTxParams$BackerBackProject({ projectId });
+
+  const [maxLovelaceAmount, _maxLovelaceAmount$Error] = useMaxLovelaceAmount();
+
+  const fieldLovelaceAmount = useField$LovelaceAmount({
+    maxLovelaceAmount,
+  });
 
   const [txBreakdown$New, txBreakdown$New$Error] = useEstimatedFees({
     txParamsResult,
     projectId,
-    lovelaceAmount: output.lovelaceAmount,
-    message: output.message,
+    lovelaceAmount: fieldLovelaceAmount.parsed,
+    message: fieldMessage.parsed,
     disabled: busy,
   });
 
@@ -87,7 +95,7 @@ export default function ModalBackProject({
     !txBreakdown$New$Error &&
     !txBreakdown$New &&
     !busy &&
-    output.lovelaceAmount !== undefined;
+    fieldLovelaceAmount.parsed !== undefined;
 
   React.useEffect(() => {
     if (busy) return;
@@ -108,10 +116,11 @@ export default function ModalBackProject({
   };
 
   const handleSubmit = async () => {
-    if (output.lovelaceAmount == null) return;
+    if (fieldLovelaceAmount.parsed == null) return;
     setBusy(true);
     try {
-      const { lovelaceAmount, message } = output;
+      const lovelaceAmount = fieldLovelaceAmount.parsed;
+      const message = fieldMessage.parsed;
       assert(walletStatus.status === "connected", "wallet not connected");
       assert(lovelaceAmount != null && message != null, "invalid inputs");
       assert(txParamsResult && !txParamsResult.error, "tx params invalid");
@@ -202,11 +211,11 @@ export default function ModalBackProject({
               <fieldset className={styles.fieldset}>
                 <Title className={styles.fieldLabel} content="Stake Amount" />
                 <InputLovelaceAmount
-                  value={input.lovelaceAmount}
-                  onChange={input.setLovelaceAmount}
-                  inlineError={syntaxError.lovelaceAmount}
-                  lovelaceAmount={output.lovelaceAmount}
-                  maxLovelaceAmount={output.maxLovelaceAmount}
+                  value={fieldLovelaceAmount.text}
+                  onChange={fieldLovelaceAmount.setText}
+                  inlineError={fieldLovelaceAmount.error}
+                  lovelaceAmount={fieldLovelaceAmount.parsed}
+                  maxLovelaceAmount={maxLovelaceAmount}
                   disabled={busy}
                 />
               </fieldset>
@@ -228,8 +237,9 @@ export default function ModalBackProject({
                       as="span"
                       approx={true}
                       lovelaceAmount={
-                        output.lovelaceAmount
-                          ? (((BigInt(output.lovelaceAmount) * ASSUMED_ROA) /
+                        fieldLovelaceAmount.parsed
+                          ? (((BigInt(fieldLovelaceAmount.parsed) *
+                              ASSUMED_ROA) /
                               MULTIPLIER) *
                               EPOCH_LENGTH_IN_DAYS) /
                             YEAR_LENGTH_IN_DAYS
@@ -258,23 +268,22 @@ export default function ModalBackProject({
                   <span style={{ fontWeight: "400", fontSize: "12px" }}>
                     {" (Optional, 1500 characters max)"}
                   </span>
-                  {!!syntaxError.message && (
+                  {!!fieldMessage.error && (
                     <span style={{ color: "rgb(220, 32, 32)" }}>
-                      {" "}
-                      {syntaxError.message}
+                      {fieldMessage.error}
                     </span>
                   )}
                 </Title>
                 <TextArea
                   className={styles.inputMessage}
-                  value={input.message}
-                  onChange={input.setMessage}
+                  value={fieldMessage.text}
+                  onChange={fieldMessage.setText}
                   rows={5}
                   disabled={busy}
                 />
                 <span
                   className={styles.characterCount}
-                >{`${input.message.length}/1500`}</span>
+                >{`${fieldMessage.text.length}/1500`}</span>
               </fieldset>
             </form>
           </Flex.Col>
