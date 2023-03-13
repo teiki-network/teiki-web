@@ -40,9 +40,7 @@ function getProjectBenefitsProgress(
   benefits: ProjectBenefits | undefined
 ): ProgressScore {
   if (benefits == null) return 0.0;
-  const bodyContent = benefits.perks;
-  const textContent = generateText(bodyContent, editorExtensions);
-  return textContent.length > 100 ? 1.0 : 0.0;
+  return 1.0;
 }
 
 function getCommunityProgress(community: ProjectCommunity): ProgressScore {

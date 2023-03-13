@@ -29,6 +29,7 @@ type Props = {
 
 const EMPTY_PROJECT_BENEFITS: ProjectBenefits = {
   perks: { type: "doc", content: [{ type: "paragraph" }] },
+  tiers: [],
 };
 
 export default function PagePreviewProject({ storageId, projectId }: Props) {

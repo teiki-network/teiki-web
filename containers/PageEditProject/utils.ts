@@ -41,10 +41,8 @@ function newProject(): Project {
     },
     // roadmap: [],
     benefits: {
-      perks: {
-        type: "doc",
-        content: [{ type: "paragraph" }],
-      },
+      perks: { type: "doc", content: [{ type: "paragraph" }] },
+      tiers: [],
     },
     community: {
       socialChannels: [],

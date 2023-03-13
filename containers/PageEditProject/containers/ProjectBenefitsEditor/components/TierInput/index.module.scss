@@ -1,0 +1,127 @@
+.milestoneInput {
+  background-color: rgba(31, 62, 47, 0.05);
+  width: 100%;
+  border-radius: 12px;
+  padding: 16px 24px;
+}
+
+.milestoneInput + .milestoneInput {
+  margin-top: 12px;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.icons {
+  display: flex;
+}
+
+.icon {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  column-gap: 8px;
+}
+
+.line {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  width: 100%;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.iconAda {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  background-color: white;
+}
+
+.fundingListWrapper {
+  padding: 24px 16px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 12px;
+  width: 100%;
+  background-color: white;
+  position: absolute;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.switch {
+  color: black !important;
+}
+
+.flex {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputDate {
+  width: 100%;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.divider {
+  margin: 16px 0;
+}
+
+.inputField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.box {
+  flex: 0 0 auto;
+  border: 1px solid #00000019;
+  border-radius: 4px;
+  padding: 16px;
+  background-color: #ffffff;
+}
+
+.milestoneTitle {
+  flex: 1 1 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.isCompletedInput {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fundingBotSlot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.usdPrice {
+  color: #00362c;
+  flex: 1 1 0;
+  overflow: hidden;
+}
+
+.warning {
+  color: #f74055;
+  font-weight: 600;
+}
