@@ -143,5 +143,33 @@ export default function ActivityAction({ className, style, value }: Props) {
           />
         </Typography.Div>
       );
+    case "project_creation":
+      return (
+        <Typography.Div maxLines={2} className={className} style={style}>
+          <Typography.Span size="heading6" content={value.projectTitle} />
+          <Typography.Span
+            size="bodySmall"
+            lineHeight="medium"
+            content=" launched"
+            color="ink80"
+          />
+          {value.sponsorshipAmount ? (
+            <>
+              <Typography.Span
+                size="bodySmall"
+                lineHeight="medium"
+                content=", with the sponsorship of "
+                color="ink80"
+              />
+              <Typography.Span size="heading6" color="green">
+                <AssetViewer.Ada.Standard
+                  as="span"
+                  lovelaceAmount={value.sponsorshipAmount}
+                />
+              </Typography.Span>
+            </>
+          ) : null}
+        </Typography.Div>
+      );
   }
 }
