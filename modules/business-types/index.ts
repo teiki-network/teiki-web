@@ -1,6 +1,8 @@
 import { JSONContent } from "@tiptap/core";
 import { TxHash } from "lucid-cardano";
 
+import { Base64, CipherMeta } from "../crypt";
+
 import { formatLovelaceAmount } from "@/modules/bigint-utils";
 
 export type Address = string;
@@ -92,6 +94,11 @@ export type ProjectAnnouncement = {
    * `censorship` indicates list of inappropriate fields.
    */
   censorship?: string[];
+};
+
+export type ExclusivePost = Omit<ProjectAnnouncement, "body"> & {
+  body: CipherMeta & { data: Base64 };
+  totalActiveStakeToView: LovelaceAmount;
 };
 
 /** @deprecated Please rename to `ProjectAnnouncement` */
