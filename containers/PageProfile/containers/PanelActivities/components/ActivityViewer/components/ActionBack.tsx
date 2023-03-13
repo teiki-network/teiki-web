@@ -19,7 +19,11 @@ export default function ActionBack({ className, style, value }: Props) {
     <Flex.Col className={className} style={style} gap="8px">
       <Typography.Div size="bodySmall" color="ink80">
         <Typography.Span fontWeight="semibold" color="ink">
-          <InlineAddress value={value.createdBy} length="short" />
+          {!value.createdByHandle ? (
+            <InlineAddress value={value.createdBy} length="short" />
+          ) : (
+            <span>{`$${value.createdByHandle}`}</span>
+          )}
         </Typography.Span>
         <Typography.Span content=" staked " />
         <AssetViewer.Ada.Standard

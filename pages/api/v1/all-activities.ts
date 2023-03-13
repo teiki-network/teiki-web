@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { apiCatch, ClientError } from "@/modules/next-backend/api/errors";
 import { sendJson } from "@/modules/next-backend/api/helpers";
-import { db } from "@/modules/next-backend/connections";
+import { db, redis } from "@/modules/next-backend/connections";
 import { getAllActivities } from "@/modules/next-backend/logic/getAllActivities";
 import {
   ActivitiesActorRelationship,
@@ -24,7 +24,7 @@ export default async function handler(
       { _debug: "Invalid request" }
     );
 
-    const activities = await getAllActivities(db, {
+    const activities = await getAllActivities(db, redis, {
       actor,
       relationship,
       cursor,

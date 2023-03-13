@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { assert } from "@/modules/common-utils";
 import { apiCatch, ClientError } from "@/modules/next-backend/api/errors";
 import { sendJson } from "@/modules/next-backend/api/helpers";
-import { dbLegacy } from "@/modules/next-backend/connections";
+import { dbLegacy, redis } from "@/modules/next-backend/connections";
 import { getLegacyBackingInfoByBacker } from "@/modules/next-backend/logic-legacy/getLegacyBackingInfoByBackerAddress";
 
 export default async function handler(
@@ -18,7 +18,7 @@ export default async function handler(
     });
 
     assert(dbLegacy, "legacy db must be connected in legacy mode");
-    const result = await getLegacyBackingInfoByBacker(dbLegacy, {
+    const result = await getLegacyBackingInfoByBacker(dbLegacy, redis, {
       backerAddress,
     });
 

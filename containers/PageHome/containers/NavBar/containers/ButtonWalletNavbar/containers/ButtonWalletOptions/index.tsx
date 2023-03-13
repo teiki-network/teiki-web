@@ -48,6 +48,7 @@ export default function ButtonWalletOptions({
                 WALLET_LOGO[walletInfo.walletName]
               )}
               <div>
+                {/**TODO: @sk-tenba: integrate ada handle on navbar */}
                 <InlineAddress
                   className={styles.address}
                   value={walletInfo.address}

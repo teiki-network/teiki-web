@@ -1,4 +1,8 @@
+import Redis from "ioredis";
+
 import { Sql } from "../db";
+
+import { getAdaHandleByAddresses } from "./getAdaHandleByAddresses";
 
 import {
   Address,
@@ -36,6 +40,7 @@ type Response = {
 
 export async function getAllActivities(
   sql: Sql,
+  redis: Redis,
   { actor, relationship, cursor, limit = 50 }: Params
 ): Promise<Response> {
   // TODO: Clean this mess...
@@ -336,6 +341,12 @@ export async function getAllActivities(
     nextCursor = null;
   }
 
+  const handles = await getAdaHandleByAddresses(redis, {
+    addresses: results
+      .filter((result) => result.action === 1 || result.action === 2)
+      .map((result) => result.createdBy),
+  });
+
   const _activities: ProjectActivity[] = results.map((result) => {
     const commonFields = {
       projectId: result.projectId,
@@ -352,6 +363,7 @@ export async function getAllActivities(
             type: "back",
             lovelaceAmount: result.amount,
             createdBy: result.createdBy,
+            createdByHandle: handles[result.createdBy][0],
             createdTx: result.createdTx,
             message: result.message,
           },
@@ -364,6 +376,7 @@ export async function getAllActivities(
             type: "unback",
             lovelaceAmount: result.amount,
             createdBy: result.createdBy,
+            createdByHandle: handles[result.createdBy][0],
             createdTx: result.createdTx,
             message: result.message,
           },

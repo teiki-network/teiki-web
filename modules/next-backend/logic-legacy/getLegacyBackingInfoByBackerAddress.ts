@@ -1,3 +1,5 @@
+import Redis from "ioredis";
+
 import { Sql } from "../db";
 import { getBackerBackingUtxosByProjectId } from "../logic/getBackerBackingUtxosByProjectId";
 import { getDetailedProject } from "../logic/getDetailedProject";
@@ -24,6 +26,7 @@ type Result =
 
 export async function getLegacyBackingInfoByBacker(
   sql: Sql,
+  redis: Redis,
   { backerAddress }: Params
 ): Promise<Result> {
   const backingProjectIds = await sql`
@@ -60,7 +63,7 @@ export async function getLegacyBackingInfoByBacker(
       BigInt(0)
     );
 
-    const projectResult = await getDetailedProject(sql, {
+    const projectResult = await getDetailedProject(sql, redis, {
       projectId: legacyProjectId,
       preset: "basic",
     });

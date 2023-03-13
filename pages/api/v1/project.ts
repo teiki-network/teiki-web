@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { apiCatch, ClientError } from "@/modules/next-backend/api/errors";
 import { sendJson } from "@/modules/next-backend/api/helpers";
-import { db } from "@/modules/next-backend/connections";
+import { db, redis } from "@/modules/next-backend/connections";
 import { getDetailedProject } from "@/modules/next-backend/logic/getDetailedProject";
 
 export default async function handler(
@@ -28,7 +28,7 @@ export default async function handler(
       "invalid preset"
     );
 
-    const response = await getDetailedProject(db, {
+    const response = await getDetailedProject(db, redis, {
       active: active === undefined ? undefined : active === "true",
       customUrl,
       projectId,

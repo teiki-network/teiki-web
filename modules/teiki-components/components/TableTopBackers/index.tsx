@@ -61,10 +61,16 @@ export default function TableTopBackers({ className, style, value }: Props) {
               )}
             </div>
             <div className={styles.columnAddress}>
-              <InlineAddress.Auto
-                value={item.address}
-                className={styles.inlineAddressAuto}
-              />
+              {!item.handle ? (
+                <InlineAddress.Auto
+                  value={item.address}
+                  className={styles.inlineAddressAuto}
+                />
+              ) : (
+                <div
+                  className={styles.inlineAddressAuto}
+                >{`$${item.handle}`}</div>
+              )}
             </div>
             <div className={styles.columnLovelaceAmount}>
               <AssetViewer.Ada.Compact

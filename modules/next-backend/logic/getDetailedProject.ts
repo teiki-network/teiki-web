@@ -1,8 +1,11 @@
+import Redis from "ioredis";
+
 import { NEXT_PUBLIC_AI_URL } from "../../../config/client";
 import { Sql } from "../db";
 import { MODERATION_TAGS } from "../types";
 import { CodecCid } from "../utils/CodecCid";
 
+import { getAdaHandleByAddresses } from "./getAdaHandleByAddresses";
 import { getAllAnnouncementsByProjectId } from "./getAllAnnouncementsByProjectId";
 import { getAllProjectMilestoneSnapshots } from "./getAllProjectMilestoneSnapshots";
 import { getAllProjectUpdates } from "./getAllProjectUpdates";
@@ -62,6 +65,7 @@ function isWithBufsAs<T, V>(obj: any): obj is WithBufsAs<T, V> {
 // be the closed time or the current time?
 export async function getDetailedProject(
   sql: Sql,
+  redis: Redis,
   params: Params
 ): Promise<Response> {
   assert(
@@ -269,10 +273,10 @@ export async function getDetailedProject(
       getAllProjectMilestoneSnapshots(sql, {
         projectId,
       }),
-      getTopSupporter(sql, { projectId }),
+      getTopSupporter(sql, redis, { projectId }),
     ]);
 
-    const activities = await backingDataToActivities(backingData);
+    const activities = await backingDataToActivities(redis, backingData);
     // Announcement
     announcements.forEach((announcement) => {
       const action: ProjectActivityAction = {
@@ -350,9 +354,13 @@ export async function getDetailedProject(
 }
 
 async function backingDataToActivities(
+  redis: Redis,
   backingData: ProjectBackingActivity[]
 ): Promise<ProjectActivity[]> {
   const activities: ProjectActivity[] = [];
+  const handles = await getAdaHandleByAddresses(redis, {
+    addresses: backingData.map(({ actor }) => actor),
+  });
   await Promise.all(
     backingData.map(async (data) => {
       let message$ModeratedTags: string[] = [];
@@ -371,6 +379,7 @@ async function backingDataToActivities(
       const action: ProjectActivityAction = {
         type: data.action,
         createdBy: data.actor,
+        createdByHandle: handles[data.actor][0],
         lovelaceAmount: data.amount,
         message: data.message,
         message$ModeratedTags,

@@ -1,6 +1,9 @@
+import Redis from "ioredis";
 import { Address } from "lucid-cardano";
 
 import { Sql } from "../db";
+
+import { getAdaHandleByAddresses } from "./getAdaHandleByAddresses";
 
 type Params = {
   projectId?: string;
@@ -9,10 +12,12 @@ type Params = {
 type Response = {
   address: Address;
   lovelaceAmount: bigint;
+  handle?: string;
 }[];
 
 export async function getTopSupporter(
   sql: Sql,
+  redis: Redis,
   { projectId }: Params
 ): Promise<Response> {
   const results = await sql`
@@ -31,8 +36,12 @@ export async function getTopSupporter(
     ORDER BY
       lovelace_amount DESC;
   `;
+  const handles = await getAdaHandleByAddresses(redis, {
+    addresses: results.map(({ backerAddress }) => backerAddress),
+  });
 
   return results.map(({ backerAddress, lovelaceAmount }) => ({
+    handle: handles[backerAddress][0],
     address: backerAddress,
     lovelaceAmount,
   }));

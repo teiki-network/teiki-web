@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { DetailedProject } from "@/modules/business-types";
 import { toJson } from "@/modules/json-utils";
 import { apiCatch, ClientError } from "@/modules/next-backend/api/errors";
-import { db } from "@/modules/next-backend/connections";
+import { db, redis } from "@/modules/next-backend/connections";
 import { getBackedProjectsByBacker } from "@/modules/next-backend/logic/getBackedProjectsByBacker";
 import { getDetailedProject } from "@/modules/next-backend/logic/getDetailedProject";
 import { getProjectTeikiRewardsByBacker } from "@/modules/next-backend/logic/getProjectTeikiRewardsByBacker";
@@ -22,7 +22,7 @@ export default async function handler(
      *  need info about the 'closed'/'delisted' ones here
      */
     // TODO: Returning a list of owner's projects
-    const ownProject = await getDetailedProject(db, {
+    const ownProject = await getDetailedProject(db, redis, {
       active: true,
       ownerAddress: address,
       preset: "basic",

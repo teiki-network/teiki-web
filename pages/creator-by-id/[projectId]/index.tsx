@@ -3,7 +3,7 @@ import { GetServerSideProps } from "next";
 import PageProjectDetails from "../../../containers/PageProjectDetails";
 
 import { DisplayableError } from "@/modules/displayable-error";
-import { db } from "@/modules/next-backend/connections";
+import { db, redis } from "@/modules/next-backend/connections";
 import {
   getDetailedProject,
   GET_DETAILED_PROJECT__ERRORS,
@@ -29,7 +29,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const project$Response = await getDetailedProject(db, {
+  const project$Response = await getDetailedProject(db, redis, {
     projectId,
     preset: "minimal",
   }).catch((error) => {

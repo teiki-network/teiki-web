@@ -4,7 +4,7 @@ import { SWRConfig, unstable_serialize } from "swr";
 import PageProjectDetails from "../../../containers/PageProjectDetails";
 
 import { DisplayableError } from "@/modules/displayable-error";
-import { db } from "@/modules/next-backend/connections";
+import { db, redis } from "@/modules/next-backend/connections";
 import {
   getDetailedProject,
   GetDetailedProject$Params,
@@ -44,15 +44,17 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     preset: "full",
   };
   const project$Key = httpGetProject$GetKey(project$Params);
-  const project$Response = await getDetailedProject(db, project$Params).catch(
-    (error) => {
-      throw new DisplayableError({
-        title: "Server error",
-        description: "Failed to get the creator.",
-        cause: error,
-      });
-    }
-  );
+  const project$Response = await getDetailedProject(
+    db,
+    redis,
+    project$Params
+  ).catch((error) => {
+    throw new DisplayableError({
+      title: "Server error",
+      description: "Failed to get the creator.",
+      cause: error,
+    });
+  });
 
   if (project$Response?.error === GET_DETAILED_PROJECT__ERRORS.NOT_FOUND) {
     return { notFound: true };

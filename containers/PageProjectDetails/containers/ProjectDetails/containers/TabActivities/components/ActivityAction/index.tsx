@@ -29,7 +29,11 @@ export default function ActivityAction({ className, style, value }: Props) {
             style={style}
           >
             <Typography.Span size="heading6">
-              <InlineAddress value={value.createdBy} length="short" />
+              {!value.createdByHandle ? (
+                <InlineAddress value={value.createdBy} length="short" />
+              ) : (
+                <span>{`$${value.createdByHandle}`}</span>
+              )}
             </Typography.Span>
             <Typography.Span
               color="ink80"
@@ -56,7 +60,11 @@ export default function ActivityAction({ className, style, value }: Props) {
             style={style}
           >
             <Typography.Span size="heading6">
-              <InlineAddress value={value.createdBy} length="short" />
+              {!value.createdByHandle ? (
+                <InlineAddress value={value.createdBy} length="short" />
+              ) : (
+                <span>{`$${value.createdByHandle}`}</span>
+              )}
             </Typography.Span>
             <Typography.Span
               color="ink80"
