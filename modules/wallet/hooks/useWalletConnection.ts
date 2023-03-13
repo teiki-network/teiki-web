@@ -42,6 +42,7 @@ export function useWalletConnection({ provider, network }: Params): Results {
 
   const disconnectWallet = () => {
     setWalletStatus({ status: "disconnected" });
+    localStorage.removeItem("auth-token");
   };
 
   const isWalletConnected = async (walletName: string) => {
