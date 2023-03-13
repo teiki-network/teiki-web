@@ -38,7 +38,7 @@ export default function TableTopBackers({ className, style, value }: Props) {
       <div className={cx(styles.container, className)} style={style}>
         <Flex.Col gap="10px" alignItems="center">
           <Image src={svgFlyingLeaves} alt="" width={96} height={96} />
-          <Typography.Div size="bodySmall" color="ink80" content="No Backers" />
+          <Typography.Div size="bodySmall" color="ink80" content="No Members" />
         </Flex.Col>
       </div>
     );
