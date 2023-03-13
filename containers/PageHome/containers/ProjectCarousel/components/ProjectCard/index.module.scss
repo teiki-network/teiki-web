@@ -13,11 +13,11 @@
 
 .afterBackdrop {
   margin-top: -30px;
-  &.narrow {
+  .paddingNarrow & {
     padding: 0 32px 24px 32px;
   }
 
-  &.normal {
+  .paddingNormal & {
     padding: 0 56px 48px 56px;
   }
 }
@@ -97,11 +97,12 @@
   border-radius: 65px;
   padding: 8px 12px;
 
-  &.normal {
+  .paddingNormal & {
     left: 56px;
     top: 32px;
   }
-  &.narrow {
+
+  .paddingNarrow & {
     left: 32px;
     top: 16px;
   }

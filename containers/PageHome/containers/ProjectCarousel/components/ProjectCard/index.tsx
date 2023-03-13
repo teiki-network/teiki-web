@@ -65,7 +65,7 @@ export default function ProjectCard({
       className={cx(
         className,
         styles.container,
-        padding === "normal" ? styles.normal : styles.narrow
+        padding === "normal" ? styles.paddingNormal : styles.paddingNarrow
       )}
     >
       {isCensored ? (
@@ -92,10 +92,7 @@ export default function ProjectCard({
         <>
           {!value.match ? null : (
             <Typography.Div
-              className={cx(
-                styles.match,
-                padding === "normal" ? styles.normal : styles.narrow
-              )}
+              className={styles.match}
               size="bodyExtraSmall"
               fontWeight="semibold"
               lineHeight="small"
@@ -105,12 +102,7 @@ export default function ProjectCard({
           <WithAspectRatio aspectRatio={16 / 9}>
             <ProjectImageCropped value={value.basics.coverImages[0]} fluid />
           </WithAspectRatio>
-          <div
-            className={cx(
-              styles.afterBackdrop,
-              padding === "normal" ? styles.normal : styles.narrow
-            )}
-          >
+          <div className={styles.afterBackdrop}>
             <LogoImageViewer
               value={value.basics.logoImage}
               shadow="shadow"
